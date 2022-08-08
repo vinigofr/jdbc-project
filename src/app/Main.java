@@ -1,27 +1,56 @@
 package app;
 
-import db.DB;
-import entities.Queries;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Date;
+import java.util.List;
+import model.dao.DaoFactory;
+import model.dao.SellerDao;
+import model.entities.Department;
+import model.entities.Seller;
 
 public class Main {
     public static void main(String[] args) {
-        DB connectionInstance = DB.getInstance();
-        Connection connection = null;
-        PreparedStatement statement = null;
 
-        try {
-            connection = connectionInstance.getConnection();
-            statement = connection.prepareStatement(Queries.INSERT_INTO_SELLERS, Statement.RETURN_GENERATED_KEYS);
+        SellerDao sellerDao = DaoFactory.createSellerDao();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            connectionInstance.closeStatement(statement);
-            connectionInstance.closeConnection(connection);
+        System.out.println("Prinf of seller by id 3 =====");
+        Seller seller = sellerDao.findById(3);
+        System.out.println(seller);
+        System.out.println();
+
+        System.out.println("Prinf of seller by departmentId 2 =====");
+        List<Seller> sellers = sellerDao.findByDepartment(2);
+        for (Seller s : sellers) {
+            System.out.println("Vendedor " + s);
         }
+        System.out.println();
+
+        System.out.println("Prinf all seller=====");
+        sellers = sellerDao.findAll();
+        for (Seller s : sellers) {
+            System.out.println("Vendedor " + s);
+        }
+        System.out.println();
+
+        System.out.println("Prinf all seller=====");
+
+
+        Department department = new Department(1, null);
+        Seller seller1 = new Seller(null, "AAAAAAAAAAAA", "vinicius@vini.com", new Date(), 1.0, department);
+        sellerDao.insert(seller1);
+
+        System.out.println("Insertion seller =====");
+        seller = sellerDao.findById(seller1.getId());
+        System.out.println("Inserted! ID: " + seller.getId());
+        System.out.println();
+
+        System.out.println("Updating seller =====");
+        seller = sellerDao.findById(1);
+        seller.setName("Vinicius Novo");
+        sellerDao.update(seller);
+        System.out.println("Updated");
+
+        System.out.println("Deleting seller =====");
+        sellerDao.deleteById(30);
+        System.out.println("Deleted");
     }
 }

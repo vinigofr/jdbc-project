@@ -13,7 +13,7 @@ public class DB {
 
     String driverClassName = "com.mysql.cj.jdbc.Driver";
 
-    private static DB connectionFactory = null;
+//    private static DB connectionFactory = null;
 
     private DB() {
         try {
@@ -23,25 +23,29 @@ public class DB {
         }
     }
 
-    public Connection getConnection() throws SQLException {
+    public static Connection getConnection() {
         Properties props = loadProperties();
 
         Connection conn = null;
 
-        conn = DriverManager.getConnection(
-                props.getProperty("dburl"),
-                props.getProperty("username"),
-                props.getProperty("password")
-        );
+        try {
+            conn = DriverManager.getConnection(
+                    props.getProperty("dburl"),
+                    props.getProperty("username"),
+                    props.getProperty("password")
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return conn;
     }
 
-    public static DB getInstance() {
-        if (connectionFactory == null) {
-            connectionFactory = new DB();
-        }
-        return connectionFactory;
-    }
+//    public static DB getInstance() {
+//        if (connectionFactory == null) {
+//            connectionFactory = new DB();
+//        }
+//        return connectionFactory;
+//    }
 
     public static void closeStatement(Statement statement) {
         if (statement != null) {
